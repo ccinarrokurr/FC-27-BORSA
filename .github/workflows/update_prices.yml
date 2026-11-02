@@ -3,6 +3,7 @@ name: Update Player Prices
 on:
   schedule:
     - cron: '0 * * * *'
+    workflows_dispatch:
 
 jobs:
   update-prices:
