@@ -1,0 +1,403 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EA FC 27 Ultimate Team Market Predictor & Price Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        fc: {
+                            bg: '#0a0f0d',
+                            card: '#121a16',
+                            border: '#1e2d26',
+                            accent: '#00ff87',
+                            gold: '#f3cc63',
+                            danger: '#ff4a4a',
+                            darkGold: '#29210c'
+                        }
+                    },
+                    fontFamily: {
+                        teko: ['Teko', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0f0d;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 135, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(243, 204, 99, 0.03) 0%, transparent 20%);
+        }
+
+        /* Custom FUT Card Styling */
+        .fut-card {
+            background: linear-gradient(135deg, #1d2721 0%, #101613 100%);
+            border: 1px solid rgba(243, 204, 99, 0.3);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fut-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 255, 135, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 255, 135, 0.15);
+        }
+
+        .gold-border {
+            border-color: #f3cc63;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(180deg, #fff2cb 0%, #f3cc63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f0d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2d26;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff87;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-fc-border bg-fc-card/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-fc-accent to-emerald-700 flex items-center justify-center font-teko text-2xl font-bold text-black shadow-lg shadow-fc-accent/20">
+                    27
+                </div>
+                <div>
+                    <h1 class="font-teko text-2xl leading-none tracking-wider text-white">FC 27 <span class="text-fc-accent">MARKET ANALYZER</span></h1>
+                    <p class="text-[10px] text-gray-400 -mt-1 font-mono">ULTIMATE TEAM ANALYTICS & PREDICTOR</p>
+                </div>
+            </div>
+
+            <!-- Platform & Status Indicator -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center bg-black/40 px-3 py-1.5 rounded-full border border-fc-border text-xs text-gray-300 space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-fc-accent animate-pulse"></span>
+                    <span class="font-mono">PİYASA DURUMU: <strong class="text-fc-accent">SBC SÜRPRİZİ DÜŞÜŞÜ</strong></span>
+                </div>
+                
+                <div class="flex items-center space-x-1 bg-black/60 p-1 rounded-lg border border-fc-border text-xs">
+                    <button class="px-3 py-1 rounded bg-fc-accent text-black font-semibold">PS5 / XBOX</button>
+                    <button class="px-3 py-1 rounded text-gray-400 hover:text-white transition">PC</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+
+        <!-- Market Overview Banner / WL & SBC Radar -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- Timing Radar -->
+            <div class="bg-fc-card rounded-xl p-4 border border-fc-border flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-fc-accent/5 rounded-full blur-xl"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs uppercase text-gray-400 font-semibold tracking-wider">Haftalık Borsa Takvimi</span>
+                        <h2 class="text-lg font-bold text-white mt-1">Weekend League Döngüsü</h2>
+                    </div>
+                    <i class="fa-solid fa-clock-rotate-left text-fc-accent text-xl"></i>
+                </div>
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-gray-400">Şu Anki Aşama:</span>
+                        <span class="text-fc-gold font-semibold">Perşembe Rivals Ödül Sonrası</span>
+                    </div>
+                    <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden border border-fc-border">
+                        <div class="bg-gradient-to-r from-fc-accent via-fc-gold to-fc-danger h-full w-[65%]"></div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-3 leading-relaxed">
+                    <i class="fa-solid fa-circle-info text-fc-accent mr-1"></i> Perşembe ödülleri sonrası fiyatlar geçici düştü. **Cuma 18:00 WL Başlangıcına** kadar kadro kurma talebi artacak.
+                </p>
+            </div>
+
+            <!-- Best Buy Signal -->
+            <div class="bg-fc-card rounded-xl p-4 border border-fc-border flex flex-col justify-between relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs uppercase text-gray-400 font-semibold tracking-wider">Algoritma Tavsiyesi</span>
+                        <h2 class="text-lg font-bold text-fc-accent mt-1">En Yüksek Kar Fırsatı</h2>
+                    </div>
+                    <i class="fa-solid fa-bolt text-fc-gold text-xl"></i>
+                </div>
+                <div class="my-2 bg-black/30 p-2.5 rounded-lg border border-fc-border/60 flex items-center space-x-3">
+                    <div class="font-teko text-2xl font-bold text-fc-gold">88+</div>
+                    <div class="text-xs">
+                        <div class="font-semibold text-white">SBC Fodder (Reyting Malzemeleri)</div>
+                        <div class="text-gray-400">Tahmini artış: <span class="text-fc-accent font-bold">%15 - %25</span></div>
+                    </div>
+                </div>
+                <span class="text-[11px] text-gray-400">Gelecek Saat 20:00 İkon SBC'si beklentisi nedeniyle dip fiyatta.</span>
+            </div>
+
+            <!-- Quick Market Stats -->
+            <div class="bg-fc-card rounded-xl p-4 border border-fc-border flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs uppercase text-gray-400 font-semibold tracking-wider">Fut Market İndeksi</span>
+                        <h2 class="text-lg font-bold text-white mt-1">FUT27 Top 50 Index</h2>
+                    </div>
+                    <i class="fa-solid fa-chart-line text-emerald-400 text-xl"></i>
+                </div>
+                <div class="flex items-baseline space-x-3 my-2">
+                    <span class="text-3xl font-teko font-bold text-white">1,248.50</span>
+                    <span class="text-xs font-semibold text-fc-accent bg-fc-accent/10 px-2 py-0.5 rounded border border-fc-accent/30">
+                        <i class="fa-solid fa-caret-up mr-1"></i>+%3.2
+                    </span>
+                </div>
+                <div class="text-[11px] text-gray-400 flex justify-between">
+                    <span>24s Hacim: <strong class="text-gray-200">14.2M Coin</strong></span>
+                    <span>Piyasa Yönü: <strong class="text-fc-accent">Yükseliş (Bullish)</strong></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bg-fc-card p-4 rounded-xl border border-fc-border flex flex-col md:flex-row gap-4 justify-between items-center">
+            
+            <!-- Search Input -->
+            <div class="relative w-full md:w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Oyuncu ismi ile ara (Örn: Mbappé)..." 
+                    class="w-full bg-black/50 border border-fc-border rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-fc-accent transition">
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button onclick="filterCards('all')" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-medium bg-fc-accent text-black font-semibold">Tümü</button>
+                <button onclick="filterCards('meta')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-black/40 text-gray-300 hover:text-white border border-fc-border">Meta Oyuncular</button>
+                <button onclick="filterCards('fodder')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-black/40 text-gray-300 hover:text-white border border-fc-border">SBC Fodder</button>
+                <button onclick="filterCards('buy')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-black/40 text-emerald-400 border border-emerald-500/30">🔥 Sadece "AL" Sinyalleri</button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard View: Left Card List, Right Analytics Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Player List (7 Cols) -->
+            <div class="lg:col-span-7 space-y-3" id="playerList">
+                <!-- Dynamically Populated via JS -->
+            </div>
+
+            <!-- Analytics & Chart Panel (5 Cols) -->
+            <div class="lg:col-span-5 bg-fc-card rounded-xl border border-fc-border p-5 flex flex-col justify-between sticky top-20 h-fit space-y-5">
+                
+                <!-- Selected Player Header -->
+                <div class="flex items-center justify-between border-b border-fc-border/60 pb-4" id="analyticsHeader">
+                    <div class="flex items-center space-x-3">
+                        <div id="selectedPlayerRating" class="w-12 h-12 rounded-lg bg-fc-gold/20 border border-fc-gold/40 flex items-center justify-center text-fc-gold font-teko text-2xl font-bold">
+                            91
+                        </div>
+                        <div>
+                            <h3 id="selectedPlayerName" class="font-bold text-lg text-white">Kylian Mbappé</h3>
+                            <p id="selectedPlayerMeta" class="text-xs text-gray-400">Real Madrid • LaLiga • Santrafor (ST)</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div id="selectedPlayerPrice" class="text-2xl font-teko font-bold text-fc-accent">2,450,000</div>
+                        <span class="text-[10px] text-gray-400 font-mono uppercase">GÜNCEL FİYAT (COIN)</span>
+                    </div>
+                </div>
+
+                <!-- Price Chart -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-semibold text-gray-300">7 Günlük Fiyat Trendi ve Tahmin</span>
+                        <div class="flex space-x-2 text-[10px]">
+                            <span class="flex items-center text-fc-accent"><span class="w-2 h-2 rounded-full bg-fc-accent mr-1"></span> Geçmiş</span>
+                            <span class="flex items-center text-fc-gold"><span class="w-2 h-2 rounded-full bg-fc-gold mr-1"></span> Tahmin</span>
+                        </div>
+                    </div>
+                    <div class="h-48 w-full relative">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Algorithmic Recommendation Box -->
+                <div id="recommendationCard" class="p-4 rounded-lg bg-black/40 border border-fc-border space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Yapay Zekâ Analiz Raporu</span>
+                        <span id="recommendationBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">GÜÇLÜ AL</span>
+                    </div>
+                    <p id="recommendationText" class="text-xs text-gray-300 leading-relaxed">
+                        Cuma akşamı başlayacak Weekend League öncesi talep en üst seviyeye çıkacak. Gelecek 24 saat içinde %6-%10 arası değer kazanması bekleniyor.
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 pt-2 text-[11px] border-t border-fc-border/40 font-mono">
+                        <div>Hedef Alış: <span id="targetBuy" class="text-fc-accent font-semibold">2,380,000</span></div>
+                        <div>Hedef Satış: <span id="targetSell" class="text-fc-gold font-semibold">2,650,000</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-fc-border bg-black/60 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 2026 EA FC 27 Ultimate Team Market Simulator. Tüm hakları saklıdır.</p>
+            <p class="font-mono text-[10px] text-gray-600">Veriler FUT 27 Canlı Borsa Algoritması Tarafından Simüle Edilmektedir.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Sample FC 27 FUT Market Data
+        const playersData = [
+            {
+                id: 'mbappe',
+                name: 'Kylian Mbappé',
+                club: 'Real Madrid',
+                league: 'LaLiga',
+                position: 'ST',
+                rating: 91,
+                price: 2450000,
+                change24h: 3.4,
+                type: 'meta',
+                signal: 'BUY',
+                signalText: 'WL kadro kurma süreci başladı. Cuma gecesine kadar fiyatının yükselmesi bekleniyor.',
+                targetBuy: '2,390,000',
+                targetSell: '2,680,000',
+                history: [2300000, 2320000, 2280000, 2350000, 2400000, 2450000, 2580000, 2650000] // Last 6 days + 2 forecast
+            },
+            {
+                id: 'haaland',
+                name: 'Erling Haaland',
+                club: 'Manchester City',
+                league: 'Premier League',
+                position: 'ST',
+                rating: 91,
+                price: 1120000,
+                change24h: -2.1,
+                type: 'meta',
+                signal: 'HOLD',
+                signalText: 'Şu an stabil seyrediyor. Premier Lig SBC paketi gelirse kısa süreli düşüş yaşayabilir.',
+                targetBuy: '1,050,000',
+                targetSell: '1,220,000',
+                history: [1180000, 1160000, 1150000, 1140000, 1130000, 1120000, 1110000, 1150000]
+            },
+            {
+                id: 'vinicius',
+                name: 'Vinícius Jr.',
+                club: 'Real Madrid',
+                league: 'LaLiga',
+                position: 'LW',
+                rating: 90,
+                price: 1850000,
+                change24h: 5.8,
+                type: 'meta',
+                signal: 'SELL',
+                signalText: 'Son 48 saatte zirve fiyata ulaştı. Pazar akşamı WL satış dalgası başlamadan elden çıkarılmalı.',
+                targetBuy: '1,650,000',
+                targetSell: '1,880,000',
+                history: [1680000, 1710000, 1750000, 1790000, 1820000, 1850000, 1820000, 1720000]
+            },
+            {
+                id: 'bellingham',
+                name: 'Jude Bellingham',
+                club: 'Real Madrid',
+                league: 'LaLiga',
+                position: 'CAM',
+                rating: 90,
+                price: 980000,
+                change24h: 1.2,
+                type: 'meta',
+                signal: 'BUY',
+                signalText: 'Orta saha oyuncuları arasında meta hakimiyeti yüksek. Fiyatı ivme kazanıyor.',
+                targetBuy: '950,000',
+                targetSell: '1,100,000',
+                history: [930000, 940000, 945000, 960000, 970000, 980000, 1020000, 1060000]
+            },
+            {
+                id: 'kane',
+                name: 'Harry Kane',
+                club: 'Bayern München',
+                league: 'Bundesliga',
+                position: 'ST',
+                rating: 90,
+                price: 38500,
+                change24h: -6.5,
+                type: 'fodder',
+                signal: 'BUY',
+                signalText: 'SBC Fodder! 90 reyting kart için dip seviyede. Gelecek İkon SBC’sinde en az %20 prim yapacaktır.',
+                targetBuy: '37,000',
+                targetSell: '48,000',
+                history: [45000, 44000, 42000, 40000, 39500, 38500, 44000, 47500]
+            },
+            {
+                id: 'rodri',
+                name: 'Rodri',
+                club: 'Manchester City',
+                league: 'Premier League',
+                position: 'CDM',
+                rating: 91,
+                price: 52000,
+                change24h: -4.1,
+                type: 'fodder',
+                signal: 'BUY',
+                signalText: 'Yüksek reytingli fodder kartı. Paket açılımları nedeniyle ucuzladı, biriktirmek mantıklı.',
+                targetBuy: '50,000',
+                targetSell: '65,000',
+                history: [60000, 58000, 56000, 54000, 53000, 52000, 59000, 63000]
+            }
+        ];
+
+        let selectedPlayer = playersData[0];
+        let chartInstance = null;
+        let activeFilter = 'all';
+
+        // Format Number with Commas
+        function formatCoin(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Render Player Cards List
+        function renderPlayerList(players) {
+            const listContainer = document.getElementById('playerList');
+            listContainer.innerHTML = '';
+
+            if (players.length === 0) {
+                listContainer.innerHTML = `
+                    <d
